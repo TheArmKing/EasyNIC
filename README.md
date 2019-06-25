@@ -14,3 +14,9 @@ where the first line containes the User Name, the tool will automatically fetch 
 Note - The Priority is /var/root/Documents/EasyNIC.txt on iOS since $HOME is /var/root on iOS, but the Documents directory doesn't exist so /var/mobile/Documents/EasyNIC.txt makes more sense
 If none of the file exists it uses what's provided by the System, just like in NIC
 
+# Changelog
+v1.01
+- Capital letters are replaced with lowercase instead of being removed (from packageID)
+
+v1.00
+- Initial Release
