@@ -37,7 +37,7 @@ done
 ja=0
 while (( !ja )); do
 	read -p "Choose a Template (required): " nump
-	if [ "$nump" -gt 0 ] && [ "$nump" -lt "${#aro[@]}" ]; then
+	if [ "$nump" -gt 0 ] && [ "$nump" -le "${#aro[@]}" ]; then
 		tempath="${dir}/templates/${aro[$nump - 1]}.nic.tar"
 		ja=1
 	else
@@ -83,8 +83,8 @@ fi
 rm "/tmp/easynicusername.txt"
 read -p "Author/Maintainer Name [${line}]: " otor
 if [ "$otor" == "" ]; then otor="${line}"; fi
-yrc="$(echo "$otor" | awk '{print tolower($0)}'  | sed 's/[^0-9a-z]*//g')"
+yrc="$(echo "$otor" | awk '{print tolower($0)}' | sed 's/[^0-9a-z]*//g')"
 read -p "Package Name [com.${yrc}.${pjn}]: " pckg
 if [ "$pckg" == "" ]; then pckg="com.${yrc}.${pjn}"; fi
-pckg="$(echo "$pckg" | sed 's/[^0-9a-z.]*//g')"
+pckg="$(echo "$pckg" | awk '{print tolower($0)}' | sed 's/[^0-9a-z.]*//g')"
 "${dir}/bin/nic.pl" --nic "$tempath" -n "$pjn" -p "$pckg" -u "$otor"
