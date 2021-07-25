@@ -29,6 +29,7 @@ echo "EasyNIC 1.0 - TheArmKing"
 echo "------------------------"
 bjen="$(find "$dir" -type f -name '*.tar' | sed "s/${ndir//\//\\/}//g" | sed 's/.tar//g' | sed 's/.nic//g')"
 IFS=$'\n' read -rd '' -a aro <<< "$bjen"
+aro=( "${aro[@]}" "Exit" )
 hj=1
 for dmf in "${aro[@]}"; do
 	echo "  [${hj}.] $dmf"
@@ -37,12 +38,14 @@ done
 ja=0
 while (( !ja )); do
 	read -p "Choose a Template (required): " nump
-	if [ "$nump" -gt 0 ] && [ "$nump" -le "${#aro[@]}" ]; then
-		tempath="${dir}/templates/${aro[$nump - 1]}.nic.tar"
-		ja=1
-	else
-		echo "Invalid Template Number!"
+	if [ $((nump)) == "$nump" ]; then
+		if [ "$nump" -eq "${#aro[@]}" ]; then exit; fi
+		if [ "$nump" -gt 0 ] && [ "$nump" -lt "${#aro[@]}" ]; then
+			tempath="${dir}/templates/${aro[$nump - 1]}.nic.tar"
+			ja=1
+		fi
 	fi
+	if [ "$ja" == "0" ]; then echo "Invalid Template Number!"; fi
 done
 qw=0
 while (( !qw )); do
