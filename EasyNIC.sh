@@ -4,7 +4,9 @@ DEFAULT_NAME="" # ENTER YOUR CUSTOM NAME HERE!
 
 if [ ! -f "/usr/bin/perl" ]; then echo "Perl is not installed! Why are you even trying to run theos without perl?" && exit; fi
 
-if [ -d "/opt/theos" ]; then
+if [ "$THEOS" != "" ]; then
+    dir="$THEOS"
+elif [ -d "/opt/theos" ]; then
 	dir="/opt/theos"
 elif [ -d "/var/theos" ] && [ -d "/var/root/theos" ] ; then
 	echo -en "1. /var/theos\n2. /var/root/theos\n"
