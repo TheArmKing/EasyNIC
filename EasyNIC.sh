@@ -1,4 +1,9 @@
 #!/bin/bash
+
+DEFAULT_NAME="" # ENTER YOUR CUSTOM NAME HERE!
+
+if [ ! -f "/usr/bin/perl" ]; then echo "Perl is not installed! Why are you even trying to run theos without perl?" && exit; fi
+
 if [ -d "/opt/theos" ]; then
 	dir="/opt/theos"
 elif [ -d "/var/theos" ] && [ -d "/var/root/theos" ] ; then
@@ -24,8 +29,24 @@ else
 	echo "No valid theos directories found!"
 	exit
 fi
+
+defn=`/usr/bin/perl -x $0`
+echo <<'__END__' > /dev/null
+#!/usr/bin/perl -wl
+use User::pwent;
+use POSIX qw(getuid);
+my $pw = getpw(getuid());
+my ($fullname) = split(/\s*,\s*/, $pw->gecos);
+print $fullname && $fullname ne "\"\"" ? $fullname : $pw->name;
+__END__
+
+if [ "${DEFAULT_NAME}" != "" ]; then
+    defn="${DEFAULT_NAME}"    
+fi
+
 ndir="${dir}/templates/"
-echo "EasyNIC 1.0 - TheArmKing"
+echo "EasyNIC v1.03 by TheArmKing"
+echo "Default Name - ${defn}"
 echo "------------------------"
 bjen="$(find "$dir" -type f -name '*.tar' | sed "s/${ndir//\//\\/}//g" | sed 's/.tar//g' | sed 's/.nic//g')"
 IFS=$'\n' read -rd '' -a aro <<< "$bjen"
@@ -52,42 +73,11 @@ while (( !qw )); do
 	read -p "Project Name (required): " pjn
 	if [ "$pjn" == "" ]; then echo "Invalid Project Name!"; else qw=1; fi
 done
-perl -x "$0"
 
-echo <<EOF >/dev/null
-#!/usr/bin/perl
-
-use strict;
-use warnings;
-
-use User::pwent;
-use POSIX qw(getuid);
-
-my $bat = getUserName();
-open my $fh, ">", "/tmp/easynicusername.txt" or die("Could not open file. $!");
-print $fh $bat;
-close $fh;
-
-sub getUserName {
-	my $pw = getpw(getuid());
-	my ($fullname) = split(/\s*,\s*/, $pw->gecos);
-	return $fullname && $fullname ne "\"\"" ? $fullname : $pw->name;
-}
-
-__END__
-EOF
-if [ -f "$HOME/Documents/EasyNIC.txt" ]; then
-	line=$(head -n 1 "$HOME/Documents/EasyNIC.txt")
-elif [ -f "/var/mobile/Documents/EasyNIC.txt" ]; then
-	line=$(head -n 1 "/var/mobile/Documents/EasyNIC.txt")
-else
-	line=$(head -n 1 "/tmp/easynicusername.txt")
-fi
-rm "/tmp/easynicusername.txt"
-read -p "Author/Maintainer Name [${line}]: " otor
-if [ "$otor" == "" ]; then otor="${line}"; fi
+read -p "Author/Maintainer Name [${defn}]: " otor
+if [ "$otor" == "" ]; then otor="${defn}"; fi
 yrc="$(echo "$otor" | awk '{print tolower($0)}' | sed 's/[^0-9a-z]*//g')"
 read -p "Package Name [com.${yrc}.${pjn}]: " pckg
 if [ "$pckg" == "" ]; then pckg="com.${yrc}.${pjn}"; fi
 pckg="$(echo "$pckg" | awk '{print tolower($0)}' | sed 's/[^0-9a-z.]*//g')"
-"${dir}/bin/nic.pl" --nic "$tempath" -n "$pjn" -p "$pckg" -u "$otor"
+"${dir}/bin/nic.pl" --nic "$tempath" -n "$pjn" -p "$pckg" -u "${otor}"
